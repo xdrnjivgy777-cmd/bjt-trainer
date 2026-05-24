@@ -1,0 +1,1912 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#ffffff">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="BJT 訓練">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="format-detection" content="telephone=no">
+<title>BJT 訓練</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icons/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Noto+Serif+SC:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+<style>
+  :root {
+    --ink: #1a1a1a;
+    --ink-soft: #888;
+    --ink-faint: #c0c0c0;
+    --line: #ececec;
+    --sakura: #f4b6c2;
+    --sakura-deep: #e89aaa;
+    --sakura-wash: #fdf2f4;
+    --paper: #fff;
+    --serif-jp: "Shippori Mincho", "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", serif;
+    --serif-en: "Cormorant Garamond", "Shippori Mincho", serif;
+    --serif-sc: "Noto Serif SC", "Songti SC", "STSong", serif;
+
+    --topbar-h: 52px;
+    --tabbar-h: 64px;
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bot: env(safe-area-inset-bottom, 0px);
+  }
+
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    margin: 0; padding: 0; height: 100%;
+    background: var(--paper); color: var(--ink);
+    font-family: var(--serif-jp); font-weight: 400; line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+    overflow: hidden;
+    overscroll-behavior-y: none;
+    touch-action: manipulation;
+  }
+  body { font-size: 15px; }
+  button, input, select { font-family: inherit; color: inherit; }
+  button { background: none; border: none; cursor: pointer; padding: 0; }
+  ul { margin: 0; padding: 0; list-style: none; }
+
+  /* SHELL */
+  .app { position: fixed; inset: 0; display: grid; grid-template-rows: auto 1fr auto; overflow: hidden; }
+  .topbar {
+    height: calc(var(--topbar-h) + var(--safe-top)); padding-top: var(--safe-top);
+    background: var(--paper); border-bottom: 1px solid var(--line);
+    display: grid; grid-template-columns: 72px 1fr 72px; align-items: center; z-index: 10;
+  }
+  .topbar-back {
+    text-align: center; font-family: var(--serif-jp); font-size: 13px;
+    color: var(--ink-soft); letter-spacing: 0.1em; padding: 0 8px;
+    min-height: 44px; display: flex; align-items: center; justify-content: center;
+  }
+  .topbar-back:active { color: var(--sakura-deep); }
+  .topbar-title {
+    text-align: center; font-family: var(--serif-jp);
+    font-size: 15px; font-weight: 500; letter-spacing: 0.15em;
+  }
+  .topbar-sub {
+    font-family: var(--serif-en); font-style: italic;
+    font-size: 10px; color: var(--ink-soft);
+    letter-spacing: 0.2em; text-transform: uppercase; margin-top: 2px;
+  }
+
+  .content {
+    overflow-y: auto; overflow-x: hidden;
+    -webkit-overflow-scrolling: touch; overscroll-behavior-y: contain;
+    background: var(--paper); position: relative;
+  }
+  .page { min-height: 100%; padding: 32px 20px 40px; }
+
+  .tabbar {
+    height: calc(var(--tabbar-h) + var(--safe-bot)); padding-bottom: var(--safe-bot);
+    background: var(--paper); border-top: 1px solid var(--line);
+    display: grid; grid-template-columns: repeat(5, 1fr); z-index: 10;
+  }
+  .tab {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 4px; font-family: var(--serif-jp); color: var(--ink-soft);
+    font-size: 12px; letter-spacing: 0.15em; position: relative; transition: color 0.2s;
+  }
+  .tab-en {
+    font-family: var(--serif-en); font-style: italic;
+    font-size: 9px; letter-spacing: 0.18em; color: var(--ink-faint); text-transform: uppercase;
+  }
+  .tab.active { color: var(--ink); }
+  .tab.active .tab-en { color: var(--sakura-deep); }
+  .tab.active::before {
+    content: ''; position: absolute; top: 6px;
+    width: 16px; height: 1px; background: var(--sakura);
+  }
+
+  /* PAGE HEAD */
+  .page-head { margin-bottom: 28px; padding-bottom: 16px; border-bottom: 1px solid var(--line); }
+  .page-num {
+    font-family: var(--serif-en); font-size: 14px; font-style: italic;
+    color: var(--sakura-deep); letter-spacing: 0.2em; margin-bottom: 4px;
+  }
+  .page-title {
+    font-family: var(--serif-jp); font-size: 26px; font-weight: 600;
+    letter-spacing: 0.06em; margin: 0;
+  }
+  .page-desc {
+    font-family: var(--serif-sc); font-size: 13px; color: var(--ink-soft);
+    margin-top: 8px; line-height: 1.7;
+  }
+
+  /* LIST */
+  .list-row {
+    display: grid; grid-template-columns: 40px 1fr auto; gap: 14px; align-items: center;
+    padding: 18px 4px; border-bottom: 1px solid var(--line);
+    min-height: 56px; transition: background 0.15s;
+  }
+  .list-row:first-child { border-top: 1px solid var(--line); }
+  .list-row:active { background: var(--sakura-wash); }
+  .list-num {
+    font-family: var(--serif-en); font-size: 16px;
+    color: var(--sakura); text-align: center;
+  }
+  .list-title { font-family: var(--serif-jp); font-size: 15px; line-height: 1.5; }
+  .list-sub {
+    font-family: var(--serif-en); font-size: 10px; color: var(--ink-soft);
+    letter-spacing: 0.15em; text-transform: uppercase; margin-top: 3px;
+  }
+  .list-meta {
+    font-family: var(--serif-en); font-size: 11px;
+    color: var(--ink-soft); letter-spacing: 0.08em;
+  }
+  .list-arrow { font-family: var(--serif-en); color: var(--ink-faint); font-size: 18px; }
+
+  .section-label {
+    font-family: var(--serif-en); font-size: 10px;
+    letter-spacing: 0.3em; color: var(--ink-soft);
+    text-transform: uppercase; margin: 32px 0 12px; text-align: center; position: relative;
+  }
+  .section-label::before, .section-label::after {
+    content: ''; display: inline-block;
+    width: 24px; height: 1px; background: var(--line);
+    vertical-align: middle; margin: 0 12px;
+  }
+  .section-label:first-child { margin-top: 0; }
+
+  /* BUTTONS */
+  .btn {
+    font-family: var(--serif-jp); font-size: 14px; letter-spacing: 0.15em;
+    padding: 14px 24px; background: var(--paper); color: var(--ink);
+    border: 1px solid var(--ink); min-height: 48px; transition: all 0.2s;
+  }
+  .btn:active { background: var(--ink); color: var(--paper); }
+  .btn-primary { background: var(--ink); color: var(--paper); }
+  .btn-primary:active { background: var(--sakura-deep); border-color: var(--sakura-deep); }
+  .btn-soft { border-color: var(--line); color: var(--ink-soft); }
+  .btn-block { display: block; width: 100%; }
+  .btn:disabled { opacity: 0.4; }
+
+  /* CHIPS */
+  .chips {
+    display: flex; gap: 8px; overflow-x: auto;
+    padding: 4px 0 16px; margin: 0 -4px;
+    scrollbar-width: none;
+  }
+  .chips::-webkit-scrollbar { display: none; }
+  .chip {
+    flex-shrink: 0; font-family: var(--serif-jp);
+    font-size: 12px; letter-spacing: 0.1em; padding: 8px 14px;
+    border: 1px solid var(--line); color: var(--ink-soft); white-space: nowrap;
+  }
+  .chip.active { color: var(--paper); background: var(--ink); border-color: var(--ink); }
+
+  /* PLAYER */
+  .player-screen { padding: 24px 20px 40px; display: flex; flex-direction: column; min-height: 100%; }
+  .player-cover {
+    margin: 16px auto 24px; padding: 36px 24px;
+    border: 1px solid var(--line); text-align: center;
+  }
+  .player-cover-label {
+    font-family: var(--serif-en); font-size: 10px;
+    letter-spacing: 0.3em; color: var(--sakura-deep);
+    text-transform: uppercase; margin-bottom: 12px;
+  }
+  .player-cover-title {
+    font-family: var(--serif-jp); font-size: 19px;
+    font-weight: 500; line-height: 1.6; letter-spacing: 0.05em;
+  }
+  .player-cover-sub {
+    font-family: var(--serif-en); font-size: 10px;
+    letter-spacing: 0.2em; color: var(--ink-soft);
+    text-transform: uppercase; margin-top: 8px;
+  }
+  .player-bar {
+    width: 100%; height: 4px; background: var(--line);
+    position: relative; margin: 24px 0 8px;
+    cursor: pointer; touch-action: none;
+  }
+  .player-bar-fill { position: absolute; left: 0; top: 0; height: 4px; background: var(--sakura); width: 0%; }
+  .player-bar-dot {
+    position: absolute; left: 0; top: -4px; width: 12px; height: 12px;
+    background: var(--sakura-deep); border-radius: 50%; margin-left: -6px;
+  }
+  .player-bar-mark {
+    position: absolute; top: -2px; width: 2px; height: 8px;
+    background: var(--ink); margin-left: -1px;
+  }
+  .player-time {
+    display: flex; justify-content: space-between;
+    font-family: var(--serif-en); font-size: 11px;
+    color: var(--ink-soft); letter-spacing: 0.1em;
+  }
+  .player-controls {
+    display: flex; justify-content: center; align-items: center;
+    gap: 24px; margin: 28px 0 20px;
+  }
+  .player-skip {
+    font-family: var(--serif-jp); font-size: 12px;
+    color: var(--ink-soft); letter-spacing: 0.1em;
+    min-width: 56px; min-height: 48px;
+  }
+  .player-play {
+    width: 68px; height: 68px; border-radius: 50%;
+    background: var(--ink); color: var(--paper);
+    font-size: 22px; transition: background 0.2s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .player-play:active { background: var(--sakura-deep); }
+  .player-speed {
+    display: flex; justify-content: space-around;
+    padding: 14px 0; border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line); margin: 12px 0;
+  }
+  .speed-btn {
+    font-family: var(--serif-en); font-size: 12px;
+    color: var(--ink-soft); letter-spacing: 0.1em;
+    padding: 8px 4px; min-width: 44px;
+  }
+  .speed-btn.active { color: var(--sakura-deep); border-bottom: 1px solid var(--sakura); }
+  .player-extra {
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    border-top: 1px solid var(--line); padding-top: 4px;
+  }
+  .player-extra button {
+    font-family: var(--serif-jp); font-size: 11px;
+    color: var(--ink-soft); letter-spacing: 0.08em;
+    padding: 14px 4px; min-height: 48px;
+  }
+  .player-extra button.active { color: var(--sakura-deep); }
+  .player-ab-info {
+    text-align: center; font-family: var(--serif-en);
+    font-size: 10px; letter-spacing: 0.2em;
+    color: var(--ink-faint); text-transform: uppercase;
+    margin: 4px 0 12px; min-height: 14px;
+  }
+  .player-ab-info.active { color: var(--sakura-deep); }
+  .recording-dot {
+    display: inline-block; width: 8px; height: 8px;
+    background: var(--sakura-deep); border-radius: 50%;
+    margin-right: 6px; vertical-align: middle;
+    animation: blink 1s infinite;
+  }
+  @keyframes blink { 50% { opacity: 0.3; } }
+  .recording-playback {
+    margin-top: 12px; padding: 12px;
+    border: 1px solid var(--sakura); background: var(--sakura-wash);
+    text-align: center;
+  }
+  .recording-playback audio { width: 100%; }
+
+  /* QUESTION */
+  .question-screen { padding: 20px 20px 40px; }
+  .question-meta {
+    font-family: var(--serif-en); font-size: 10px;
+    letter-spacing: 0.2em; color: var(--ink-soft);
+    text-transform: uppercase; text-align: center; margin-bottom: 16px;
+  }
+  .question-audio {
+    margin: 12px 0 20px; padding: 14px;
+    border: 1px solid var(--line);
+    display: grid; grid-template-columns: 44px 1fr auto; align-items: center; gap: 14px;
+  }
+  .question-audio-play {
+    width: 44px; height: 44px; border-radius: 50%;
+    background: var(--ink); color: var(--paper);
+    display: flex; align-items: center; justify-content: center; font-size: 16px;
+  }
+  .question-audio-play:active { background: var(--sakura-deep); }
+  .question-audio-info {
+    font-family: var(--serif-en); font-size: 11px;
+    color: var(--ink-soft); letter-spacing: 0.1em;
+  }
+  .question-audio-speed {
+    font-family: var(--serif-en); font-size: 11px;
+    color: var(--sakura-deep); letter-spacing: 0.15em;
+    padding: 4px 8px; border: 1px solid var(--sakura);
+  }
+  .question-stem {
+    font-family: var(--serif-jp); font-size: 16px;
+    line-height: 1.9; margin: 20px 0; letter-spacing: 0.02em;
+  }
+  .question-title-line {
+    font-family: var(--serif-en); font-size: 10px;
+    letter-spacing: 0.2em; color: var(--sakura-deep);
+    text-transform: uppercase; margin-bottom: 6px;
+  }
+  .question-options { margin-top: 12px; }
+  .option {
+    display: grid; grid-template-columns: 40px 1fr;
+    gap: 12px; align-items: baseline; padding: 14px 4px;
+    border-bottom: 1px solid var(--line); min-height: 56px;
+    transition: padding 0.15s, background 0.15s;
+  }
+  .option:first-child { border-top: 1px solid var(--line); }
+  .option:active { background: var(--sakura-wash); padding-left: 12px; }
+  .option-letter {
+    font-family: var(--serif-jp); font-size: 18px;
+    color: var(--ink-soft); text-align: center;
+  }
+  .option.selected .option-letter { color: var(--sakura-deep); font-weight: 600; }
+  .option.selected .option-text { font-weight: 500; }
+  .option.correct { background: #f3faf3; }
+  .option.correct .option-letter { color: #4a9d4a; }
+  .option.wrong { background: #fbf0f0; }
+  .option.wrong .option-letter { color: #c95252; text-decoration: line-through; }
+  .option-text { font-size: 15px; line-height: 1.7; }
+
+  .question-actions { margin-top: 28px; display: grid; gap: 10px; }
+
+  .explain {
+    margin-top: 20px; padding: 20px;
+    border: 1px solid var(--sakura); background: var(--sakura-wash);
+  }
+  .explain-label {
+    font-family: var(--serif-en); font-size: 10px;
+    letter-spacing: 0.3em; color: var(--sakura-deep);
+    text-transform: uppercase; margin-bottom: 10px;
+  }
+  .explain-ans { font-size: 15px; margin-bottom: 10px; }
+  .explain-ans strong { color: var(--sakura-deep); }
+  .explain-text {
+    font-family: var(--serif-sc); font-size: 13px; line-height: 1.9;
+  }
+
+  /* KEIGO */
+  .keigo-screen {
+    padding: 16px 20px 40px;
+    display: flex; flex-direction: column; align-items: center;
+  }
+  .keigo-progress {
+    font-family: var(--serif-en); font-size: 11px;
+    color: var(--ink-soft); letter-spacing: 0.25em; margin-bottom: 16px;
+  }
+  .keigo-progress .small { color: var(--ink-faint); font-size: 10px; margin-left: 8px; }
+  .flashcard {
+    width: 100%; max-width: 360px;
+    aspect-ratio: 3 / 4; perspective: 1500px; margin-bottom: 24px;
+  }
+  .flashcard-inner {
+    position: relative; width: 100%; height: 100%;
+    transition: transform 0.6s; transform-style: preserve-3d;
+  }
+  .flashcard.flipped .flashcard-inner { transform: rotateY(180deg); }
+  .face {
+    position: absolute; inset: 0;
+    backface-visibility: hidden; -webkit-backface-visibility: hidden;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    border: 1px solid var(--line); padding: 24px 20px; background: var(--paper);
+  }
+  .face-back { transform: rotateY(180deg); background: var(--sakura-wash); border-color: var(--sakura); }
+  .face-label {
+    font-family: var(--serif-en); font-size: 10px;
+    letter-spacing: 0.3em; color: var(--ink-soft);
+    text-transform: uppercase; margin-bottom: 16px;
+  }
+  .face-word {
+    font-family: var(--serif-jp); font-size: 46px;
+    font-weight: 500; letter-spacing: 0.05em;
+    text-align: center;
+  }
+  .face-yomi {
+    font-family: var(--serif-jp); font-size: 13px;
+    color: var(--ink-soft); margin-top: 8px; letter-spacing: 0.1em;
+  }
+  .face-tip {
+    font-family: var(--serif-en); font-size: 10px;
+    color: var(--ink-faint); letter-spacing: 0.2em;
+    text-transform: uppercase; margin-top: 20px;
+  }
+  .keigo-row { text-align: center; margin: 8px 0; }
+  .keigo-row-label {
+    display: block; font-family: var(--serif-en);
+    font-size: 9px; letter-spacing: 0.25em;
+    color: var(--sakura-deep); text-transform: uppercase; margin-bottom: 2px;
+  }
+  .keigo-row-word {
+    font-family: var(--serif-jp); font-size: 17px; font-weight: 500;
+  }
+  .keigo-note {
+    margin-top: 12px; padding: 8px 10px;
+    font-family: var(--serif-sc); font-size: 11px;
+    color: var(--ink-soft); border-top: 1px dashed var(--sakura);
+    text-align: left; line-height: 1.7;
+  }
+  .keigo-actions {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 8px; width: 100%; max-width: 360px;
+  }
+  .keigo-actions .btn {
+    padding: 14px 8px; font-size: 12px; letter-spacing: 0.08em;
+  }
+  .keigo-swipe-hint {
+    font-family: var(--serif-en); font-size: 10px;
+    letter-spacing: 0.25em; color: var(--ink-faint);
+    text-transform: uppercase; margin-top: 14px;
+  }
+  .keigo-stats {
+    margin-top: 16px; display: grid;
+    grid-template-columns: repeat(3, 1fr); gap: 4px;
+    width: 100%; max-width: 360px;
+    font-family: var(--serif-en); font-size: 9px;
+    letter-spacing: 0.2em; color: var(--ink-soft);
+    text-transform: uppercase; text-align: center;
+  }
+  .keigo-stat-num {
+    font-family: var(--serif-jp); font-size: 18px;
+    color: var(--ink); margin-bottom: 2px;
+  }
+
+  /* MOCK */
+  .mock-row {
+    display: grid; grid-template-columns: 44px 1fr auto;
+    gap: 16px; align-items: center; padding: 22px 4px;
+    border-bottom: 1px solid var(--line);
+  }
+  .mock-row:first-child { border-top: 1px solid var(--line); }
+  .mock-num { font-family: var(--serif-en); font-size: 26px; color: var(--sakura); }
+  .mock-name { font-family: var(--serif-jp); font-size: 16px; font-weight: 500; }
+  .mock-meta {
+    font-family: var(--serif-en); font-size: 10px;
+    color: var(--ink-soft); letter-spacing: 0.15em;
+    margin-top: 4px; text-transform: uppercase;
+  }
+  .mock-cta {
+    font-family: var(--serif-jp); font-size: 12px;
+    color: var(--sakura-deep); letter-spacing: 0.15em;
+    border: 1px solid var(--sakura); padding: 8px 14px;
+  }
+
+  /* MOCK RUNNING */
+  .mock-running-head {
+    display: grid; grid-template-columns: 1fr auto 1fr;
+    align-items: center; padding: 12px 20px;
+    border-bottom: 1px solid var(--line);
+    background: var(--paper); position: sticky; top: 0; z-index: 5;
+  }
+  .mock-timer {
+    font-family: var(--serif-en); font-size: 22px;
+    letter-spacing: 0.1em; text-align: center;
+  }
+  .mock-timer.warn { color: var(--sakura-deep); }
+  .mock-phase {
+    font-family: var(--serif-jp); font-size: 12px;
+    color: var(--sakura-deep); letter-spacing: 0.2em;
+  }
+  .mock-q-progress {
+    font-family: var(--serif-en); font-size: 11px;
+    color: var(--ink-soft); letter-spacing: 0.2em; text-align: right;
+  }
+  .mock-result-score {
+    text-align: center; padding: 32px 20px;
+    border: 1px solid var(--line); margin: 24px 0;
+  }
+  .mock-result-num {
+    font-family: var(--serif-en); font-size: 72px;
+    color: var(--sakura-deep); line-height: 1;
+  }
+  .mock-result-label {
+    font-family: var(--serif-en); font-size: 12px;
+    letter-spacing: 0.25em; color: var(--ink-soft);
+    text-transform: uppercase; margin-top: 14px;
+  }
+  .mock-result-level {
+    font-family: var(--serif-jp); font-size: 22px;
+    font-weight: 600; margin-top: 10px;
+  }
+  .mock-result-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 12px; margin: 20px 0;
+  }
+  .mock-result-cell {
+    border: 1px solid var(--line); padding: 14px;
+    text-align: center;
+  }
+  .mock-result-cell .num {
+    font-family: var(--serif-jp); font-size: 22px;
+    color: var(--ink); font-weight: 500;
+  }
+  .mock-result-cell .label {
+    font-family: var(--serif-en); font-size: 9px;
+    color: var(--ink-soft); letter-spacing: 0.2em;
+    text-transform: uppercase; margin-top: 6px;
+  }
+
+  /* EMPTY */
+  .empty { text-align: center; padding: 80px 20px; }
+  .empty-mark {
+    font-family: var(--serif-en); font-size: 80px;
+    color: var(--sakura); line-height: 1; margin-bottom: 20px;
+  }
+  .empty-title { font-family: var(--serif-jp); font-size: 18px; margin-bottom: 8px; }
+  .empty-desc { font-family: var(--serif-sc); font-size: 13px; color: var(--ink-soft); }
+
+  /* OFFLINE */
+  .offline-tag {
+    position: fixed; top: calc(var(--safe-top) + 8px); right: 12px;
+    font-family: var(--serif-en); font-size: 10px;
+    letter-spacing: 0.2em; color: var(--ink-soft);
+    background: var(--sakura-wash); border: 1px solid var(--sakura);
+    padding: 4px 10px; text-transform: uppercase; z-index: 20;
+  }
+
+  [x-cloak] { display: none !important; }
+
+  /* SUB PAGE */
+  .subpage {
+    position: absolute; inset: 0; background: var(--paper);
+    display: flex; flex-direction: column;
+    z-index: 5; overflow-y: auto; -webkit-overflow-scrolling: touch;
+    animation: slideIn 0.22s ease-out;
+  }
+  @keyframes slideIn {
+    from { transform: translateX(20px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+
+  /* LOADING */
+  .loading {
+    position: fixed; inset: 0; display: flex;
+    align-items: center; justify-content: center;
+    background: var(--paper); z-index: 100;
+    font-family: var(--serif-en); font-size: 11px;
+    letter-spacing: 0.3em; color: var(--ink-soft);
+  }
+</style>
+</head>
+
+<body>
+
+<div class="loading" id="loading">LOADING…</div>
+
+<div class="app" x-data="bjtApp()" x-init="init()" x-cloak>
+
+  <div class="offline-tag" x-show="!online" x-transition>OFFLINE</div>
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div>
+      <button x-show="subPage" @click="closeSubPage()" class="topbar-back">← 戻る</button>
+    </div>
+    <div>
+      <div class="topbar-title" x-text="getTopTitle()"></div>
+      <div class="topbar-sub" x-text="getTopSub()"></div>
+    </div>
+    <div></div>
+  </header>
+
+  <!-- CONTENT -->
+  <main class="content">
+
+    <!-- ===== 聴解 LIST ===== -->
+    <div class="page" x-show="tab==='listen' && !subPage" x-transition.opacity>
+      <div class="page-head">
+        <div class="page-num">— No. 01 —</div>
+        <h1 class="page-title">聴解</h1>
+        <p class="page-desc">音源を選び、繰り返し聴く。耳を作る訓練。</p>
+      </div>
+
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <div style="font-family: var(--serif-en); font-size: 10px; letter-spacing: 0.2em; color: var(--ink-soft); text-transform: uppercase;">
+          <span x-text="audioStoreCount"></span> / <span x-text="listenList.length"></span> imported
+        </div>
+        <button @click="openLibrary()" style="font-family: var(--serif-jp); font-size: 11px; letter-spacing: 0.15em; color: var(--sakura-deep); border: 1px solid var(--sakura); padding: 6px 12px;">音源を取込 →</button>
+      </div>
+
+      <div class="chips">
+        <div class="chip" :class="{active: listenFilter==='all'}" @click="listenFilter='all'">すべて</div>
+        <div class="chip" :class="{active: listenFilter==='official'}" @click="listenFilter='official'">公式</div>
+        <div class="chip" :class="{active: listenFilter==='chokai'}" @click="listenFilter='chokai'">聴解専項</div>
+        <div class="chip" :class="{active: listenFilter==='xiaohong'}" @click="listenFilter='xiaohong'">小红</div>
+        <div class="chip" :class="{active: listenFilter==='guide'}" @click="listenFilter='guide'">公式ガイド</div>
+      </div>
+
+      <ul>
+        <template x-for="(it, i) in filteredListen" :key="it.id">
+          <li class="list-row" @click="openPlayer(it.id)">
+            <div class="list-num">
+              <span x-text="String(i+1).padStart(2,'0')"></span>
+              <span x-show="hasLocalAudio[it.id]" style="color: var(--sakura-deep); margin-left: 4px;">●</span>
+              <span x-show="!hasLocalAudio[it.id]" style="color: var(--ink-faint); margin-left: 4px;">○</span>
+            </div>
+            <div>
+              <div class="list-title" x-text="it.title"></div>
+              <div class="list-sub" x-text="it.source"></div>
+            </div>
+            <div class="list-meta" x-text="fmtTime(it.duration)"></div>
+          </li>
+        </template>
+      </ul>
+    </div>
+
+    <!-- ===== 問題 LIST ===== -->
+    <div class="page" x-show="tab==='question' && !subPage" x-transition.opacity>
+      <div class="page-head">
+        <div class="page-num">— No. 02 —</div>
+        <h1 class="page-title">問題</h1>
+        <p class="page-desc">出典・題型で絞り、一問ずつ解く。</p>
+      </div>
+
+      <div class="chips">
+        <div class="chip" :class="{active: qType==='all'}" @click="qType='all'">すべて</div>
+        <div class="chip" :class="{active: qType==='聴解'}" @click="qType='聴解'">聴解</div>
+        <div class="chip" :class="{active: qType==='聴読解'}" @click="qType='聴読解'">聴読解</div>
+        <div class="chip" :class="{active: qType==='読解'}" @click="qType='読解'">読解</div>
+      </div>
+
+      <template x-for="group in filteredQuestionGroups" :key="group.label">
+        <div>
+          <template x-if="group.items.length">
+            <div>
+              <div class="section-label" x-text="group.label"></div>
+              <ul>
+                <template x-for="(q, qi) in group.items" :key="q.id">
+                  <li class="list-row" @click="openQuestion(q.id)">
+                    <div class="list-num" x-text="'Q' + String(qi+1).padStart(2,'0')"></div>
+                    <div>
+                      <div class="list-title" x-text="q.title"></div>
+                      <div class="list-sub" x-text="q.type + (wrongMap[q.id] ? ' · 誤答 ' + wrongMap[q.id].count + '回' : '')"></div>
+                    </div>
+                    <div class="list-arrow">→</div>
+                  </li>
+                </template>
+              </ul>
+            </div>
+          </template>
+        </div>
+      </template>
+    </div>
+
+    <!-- ===== 敬語 ===== -->
+    <div class="page" x-show="tab==='keigo' && !subPage" x-transition.opacity x-data>
+      <div class="page-head">
+        <div class="page-num">— No. 03 —</div>
+        <h1 class="page-title">敬語</h1>
+        <p class="page-desc">タップでめくる。三類の敬語を身体に染み込ませる。</p>
+      </div>
+
+      <template x-if="currentKeigo">
+        <div class="keigo-screen">
+          <div class="keigo-progress">
+            <span x-text="String(keigoSeen + 1).padStart(2,'0')"></span>
+            <span> / </span>
+            <span x-text="String(keigoDeck.length).padStart(2,'0')"></span>
+            <span class="small" x-text="'残り ' + keigoQueue.length"></span>
+          </div>
+
+          <div class="flashcard" :class="{flipped: cardFlipped}"
+               @click="cardFlipped = !cardFlipped"
+               @touchstart="touchStart($event)"
+               @touchend="touchEnd($event, 'keigo')">
+            <div class="flashcard-inner">
+              <div class="face">
+                <div class="face-label">— Verb —</div>
+                <div class="face-word" x-text="currentKeigo.base"></div>
+                <div class="face-yomi" x-text="currentKeigo.yomi"></div>
+                <div class="face-tip">tap to flip</div>
+              </div>
+              <div class="face face-back">
+                <div class="keigo-row">
+                  <span class="keigo-row-label">尊敬語</span>
+                  <span class="keigo-row-word" x-text="currentKeigo.sonkei"></span>
+                </div>
+                <div class="keigo-row">
+                  <span class="keigo-row-label">謙譲語</span>
+                  <span class="keigo-row-word" x-text="currentKeigo.kenjo"></span>
+                </div>
+                <div class="keigo-row">
+                  <span class="keigo-row-label">丁寧語</span>
+                  <span class="keigo-row-word" x-text="currentKeigo.teinei"></span>
+                </div>
+                <template x-if="currentKeigo.note">
+                  <div class="keigo-note" x-text="currentKeigo.note"></div>
+                </template>
+              </div>
+            </div>
+          </div>
+
+          <div class="keigo-actions">
+            <button class="btn btn-soft" @click="markKeigo('hard')">わからない</button>
+            <button class="btn" @click="markKeigo('soso')">あいまい</button>
+            <button class="btn btn-primary" @click="markKeigo('easy')">わかった</button>
+          </div>
+
+          <div class="keigo-swipe-hint">← swipe to navigate →</div>
+
+          <div class="keigo-stats">
+            <div>
+              <div class="keigo-stat-num" x-text="keigoStats.easy"></div>
+              <div>Mastered</div>
+            </div>
+            <div>
+              <div class="keigo-stat-num" x-text="keigoStats.soso"></div>
+              <div>Learning</div>
+            </div>
+            <div>
+              <div class="keigo-stat-num" x-text="keigoStats.hard"></div>
+              <div>Difficult</div>
+            </div>
+          </div>
+        </div>
+      </template>
+    </div>
+
+    <!-- ===== 模試 LIST ===== -->
+    <div class="page" x-show="tab==='mock' && !subPage" x-transition.opacity>
+      <div class="page-head">
+        <div class="page-num">— No. 04 —</div>
+        <h1 class="page-title">模試</h1>
+        <p class="page-desc">本番再現。途中中断不可。</p>
+      </div>
+
+      <template x-for="(m, i) in mockList" :key="m.id">
+        <div class="mock-row" @click="openMockConfirm(m.id)">
+          <div class="mock-num" x-text="String(i+1).padStart(2,'0')"></div>
+          <div>
+            <div class="mock-name" x-text="m.name"></div>
+            <div class="mock-meta" x-text="m.meta"></div>
+          </div>
+          <div class="mock-cta">開始</div>
+        </div>
+      </template>
+    </div>
+
+    <!-- ===== 復習 LIST ===== -->
+    <div class="page" x-show="tab==='wrong' && !subPage" x-transition.opacity>
+      <div class="page-head">
+        <div class="page-num">— No. 05 —</div>
+        <h1 class="page-title">復習</h1>
+        <p class="page-desc" x-text="wrongList.length === 0 ? '誤答が記録された問題はここに集まる。' : '間違えた問題だけが、ここに残る。'"></p>
+      </div>
+
+      <template x-if="wrongList.length > 0">
+        <div class="chips">
+          <div class="chip" :class="{active: wrongSort==='recent'}" @click="wrongSort='recent'">最近誤答</div>
+          <div class="chip" :class="{active: wrongSort==='count'}" @click="wrongSort='count'">誤答回数</div>
+        </div>
+      </template>
+
+      <template x-if="wrongList.length === 0">
+        <div class="empty">
+          <div class="empty-mark">❀</div>
+          <div class="empty-title">まだ空っぽ</div>
+          <div class="empty-desc">問題訓練で誤答すると、ここに集まる。</div>
+        </div>
+      </template>
+
+      <template x-if="wrongList.length > 0">
+        <ul>
+          <template x-for="(w, i) in sortedWrongList" :key="w.qid">
+            <li class="list-row" @click="openQuestion(w.qid)">
+              <div class="list-num" x-text="String(i+1).padStart(2,'0')"></div>
+              <div>
+                <div class="list-title" x-text="w.title || w.qid"></div>
+                <div class="list-sub" x-text="(w.source || '') + ' · 誤答 ' + w.count + '回'"></div>
+              </div>
+              <div class="list-arrow">→</div>
+            </li>
+          </template>
+        </ul>
+      </template>
+    </div>
+
+    <!-- ============== PLAYER ============== -->
+    <div class="subpage" x-show="subPage==='player'" x-transition.opacity>
+      <div class="player-screen">
+        <div class="player-cover">
+          <div class="player-cover-label">— Now Playing —</div>
+          <div class="player-cover-title" x-text="currentTrack ? currentTrack.title : ''"></div>
+          <div class="player-cover-sub" x-text="currentTrack ? currentTrack.source : ''"></div>
+        </div>
+
+        <div>
+          <div class="player-bar" @click="seekBar($event)" id="player-bar">
+            <div class="player-bar-fill" :style="{ width: progressPct + '%' }"></div>
+            <div class="player-bar-dot" :style="{ left: progressPct + '%' }"></div>
+            <template x-if="abA !== null">
+              <div class="player-bar-mark" :style="{ left: (abA / (currentTrack?.duration||1)) * 100 + '%' }"></div>
+            </template>
+            <template x-if="abB !== null">
+              <div class="player-bar-mark" :style="{ left: (abB / (currentTrack?.duration||1)) * 100 + '%' }"></div>
+            </template>
+          </div>
+          <div class="player-time">
+            <span x-text="fmtTime(playTime)"></span>
+            <span x-text="fmtTime(currentTrack ? currentTrack.duration : 0)"></span>
+          </div>
+        </div>
+
+        <div class="player-ab-info" :class="{ active: abLoopOn }" x-text="abInfoText()"></div>
+
+        <div class="player-controls">
+          <button class="player-skip" @click="seek(-5)">⤺ 5s</button>
+          <button class="player-play" @click="togglePlay()">
+            <span x-text="isPlaying ? '❚❚' : '▶'"></span>
+          </button>
+          <button class="player-skip" @click="seek(5)">5s ⤻</button>
+        </div>
+
+        <div class="player-speed">
+          <template x-for="s in [0.8, 1.0, 1.2, 1.5]" :key="s">
+            <button class="speed-btn" :class="{active: speed === s}" @click="setSpeed(s)" x-text="s + '×'"></button>
+          </template>
+        </div>
+
+        <div class="player-extra">
+          <button @click="setABPoint()" :class="{ active: abLoopOn || abA !== null }">
+            <span x-text="abButtonText()"></span>
+          </button>
+          <button @click="clearAB()" x-show="abA !== null || abB !== null">AB 解除</button>
+          <button @click="toggleRecord()" :class="{ active: isRecording }">
+            <span x-show="isRecording"><span class="recording-dot"></span>録音中</span>
+            <span x-show="!isRecording">跟読録音</span>
+          </button>
+        </div>
+
+        <div class="recording-playback" x-show="recordingUrl">
+          <div style="font-family: var(--serif-en); font-size: 10px; letter-spacing: 0.2em; color: var(--sakura-deep); text-transform: uppercase; margin-bottom: 8px;">— Your Recording —</div>
+          <audio :src="recordingUrl" controls></audio>
+        </div>
+
+        <audio x-ref="audioPlayer" preload="metadata"
+               @timeupdate="onTimeUpdate()"
+               @ended="onAudioEnded()"
+               @play="isPlaying = true; audioError=false"
+               @pause="isPlaying = false"
+               @error="audioError = true"
+               @loadedmetadata="onLoadedMetadata()"></audio>
+
+        <div x-show="audioError && currentTrack && !hasLocalAudio[currentTrack.id]"
+             style="margin-top: 20px; padding: 16px; border: 1px solid var(--sakura); background: var(--sakura-wash); text-align: center;">
+          <div style="font-family: var(--serif-jp); font-size: 13px; color: var(--ink); margin-bottom: 10px;">音源がまだ取込まれていません</div>
+          <button class="btn btn-primary" @click="openLibrary()" style="padding: 10px 18px;">音源を取込 →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============== QUESTION ============== -->
+    <div class="subpage" x-show="subPage==='question'" x-transition.opacity>
+      <div class="question-screen" x-show="currentQuestion">
+        <div class="question-meta" x-text="currentQuestion ? (questionSourceLabel(currentQuestion) + ' · ' + currentQuestion.type) : ''"></div>
+
+        <template x-if="currentQuestion && currentQuestion.audioId">
+          <div class="question-audio">
+            <button class="question-audio-play" @click="toggleQuestionAudio()">
+              <span x-text="qIsPlaying ? '❚❚' : '▶'"></span>
+            </button>
+            <div class="question-audio-info" x-text="getQuestionAudioInfo()"></div>
+            <div class="question-audio-speed" @click="cycleQuestionSpeed()" x-text="qSpeed + '×'"></div>
+          </div>
+        </template>
+
+        <div class="question-title-line" x-text="currentQuestion ? currentQuestion.title : ''"></div>
+        <div class="question-stem" x-text="currentQuestion ? currentQuestion.stem : ''"></div>
+
+        <div class="question-options">
+          <template x-for="(opt) in (currentQuestion ? currentQuestion.options : [])" :key="opt.key">
+            <div class="option"
+                 :class="{
+                   selected: !showExplain && selectedOption === opt.key,
+                   correct: showExplain && opt.key === currentQuestion.answer,
+                   wrong: showExplain && selectedOption === opt.key && opt.key !== currentQuestion.answer
+                 }"
+                 @click="!showExplain && (selectedOption = opt.key)">
+              <div class="option-letter" x-text="opt.key"></div>
+              <div class="option-text" x-text="opt.text"></div>
+            </div>
+          </template>
+        </div>
+
+        <div class="question-actions">
+          <button class="btn btn-primary btn-block" x-show="!showExplain" :disabled="!selectedOption" @click="submitAnswer()">解答する</button>
+          <button class="btn btn-block" x-show="showExplain" @click="closeSubPage()">次へ →</button>
+        </div>
+
+        <div class="explain" x-show="showExplain" x-transition>
+          <div class="explain-label">— Answer & Explanation —</div>
+          <div class="explain-ans">
+            正解：<strong x-text="currentQuestion ? currentQuestion.answer : ''"></strong>
+            <span x-show="lastResult === 'correct'" style="margin-left: 12px; color: #4a9d4a; font-size: 13px;">○ 正解</span>
+            <span x-show="lastResult === 'wrong'" style="margin-left: 12px; color: #c95252; font-size: 13px;">× 不正解</span>
+          </div>
+          <div class="explain-text" x-text="currentQuestion ? currentQuestion.explain : ''"></div>
+        </div>
+
+        <audio x-ref="qAudio" preload="metadata"
+               @play="qIsPlaying = true"
+               @pause="qIsPlaying = false"
+               @ended="qIsPlaying = false"></audio>
+      </div>
+    </div>
+
+    <!-- ============== MOCK CONFIRM ============== -->
+    <div class="subpage" x-show="subPage==='mock-confirm'" x-transition.opacity>
+      <div class="page" x-show="currentMock">
+        <div class="page-head">
+          <div class="page-num">— Mock Test —</div>
+          <h1 class="page-title">本番モード</h1>
+          <p class="page-desc" x-text="currentMock ? currentMock.totalMinutes + '分間。途中で中断はできません。' : ''"></p>
+        </div>
+
+        <div style="border: 1px solid var(--line); padding: 20px; margin: 16px 0;">
+          <div class="page-num" style="margin-bottom: 6px;" x-text="currentMock ? '— ' + currentMock.name + ' —' : ''"></div>
+          <ul style="margin-top: 12px;">
+            <template x-for="(sec, i) in (currentMock ? currentMock.sections : [])" :key="i">
+              <li class="list-row">
+                <div class="list-num" x-text="['①','②','③'][i] || (i+1)"></div>
+                <div>
+                  <div class="list-title" x-text="sec.phase"></div>
+                  <div class="list-sub" x-text="sec.questionIds.length + '問 · 約' + sec.minutes + '分'"></div>
+                </div>
+                <div class="list-meta"></div>
+              </li>
+            </template>
+          </ul>
+        </div>
+
+        <div class="question-actions">
+          <button class="btn btn-primary btn-block" @click="startMockRun()">計測を開始</button>
+          <button class="btn btn-soft btn-block" @click="closeSubPage()">キャンセル</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============== MOCK RUNNING ============== -->
+    <div class="subpage" x-show="subPage==='mock-run'" x-transition.opacity>
+      <div class="mock-running-head">
+        <div class="mock-phase" x-text="currentMockPhase()"></div>
+        <div class="mock-timer" :class="{warn: mockSecondsLeft < 60}" x-text="fmtTime(mockSecondsLeft)"></div>
+        <div class="mock-q-progress" x-text="(mockQIndex + 1) + ' / ' + mockQTotal"></div>
+      </div>
+
+      <div class="question-screen" x-show="currentQuestion">
+        <template x-if="currentQuestion && currentQuestion.audioId">
+          <div class="question-audio">
+            <button class="question-audio-play" @click="toggleMockAudio()">
+              <span x-text="mockIsPlaying ? '❚❚' : '▶'"></span>
+            </button>
+            <div class="question-audio-info" x-text="getQuestionAudioInfo()"></div>
+            <div class="question-audio-speed" @click="cycleQuestionSpeed()" x-text="qSpeed + '×'"></div>
+          </div>
+        </template>
+
+        <div class="question-title-line" x-text="currentQuestion ? currentQuestion.title : ''"></div>
+        <div class="question-stem" x-text="currentQuestion ? currentQuestion.stem : ''"></div>
+
+        <div class="question-options">
+          <template x-for="(opt) in (currentQuestion ? currentQuestion.options : [])" :key="opt.key">
+            <div class="option"
+                 :class="{ selected: selectedOption === opt.key }"
+                 @click="selectedOption = opt.key">
+              <div class="option-letter" x-text="opt.key"></div>
+              <div class="option-text" x-text="opt.text"></div>
+            </div>
+          </template>
+        </div>
+
+        <div class="question-actions">
+          <button class="btn btn-primary btn-block" :disabled="!selectedOption" @click="mockNextQuestion()">
+            <span x-text="mockQIndex + 1 === mockQTotal ? '採点する' : '次の問題 →'"></span>
+          </button>
+        </div>
+
+        <audio x-ref="mockAudio" preload="metadata"
+               @play="mockIsPlaying = true"
+               @pause="mockIsPlaying = false"
+               @ended="mockIsPlaying = false"></audio>
+      </div>
+    </div>
+
+    <!-- ============== MOCK RESULT ============== -->
+    <div class="subpage" x-show="subPage==='mock-result'" x-transition.opacity>
+      <div class="page" x-show="mockResult">
+        <div class="page-head">
+          <div class="page-num">— Result —</div>
+          <h1 class="page-title">採点結果</h1>
+          <p class="page-desc" x-text="mockResult ? mockResult.mockName : ''"></p>
+        </div>
+
+        <div class="mock-result-score">
+          <div class="mock-result-num" x-text="mockResult ? mockResult.score : 0"></div>
+          <div class="mock-result-label">Estimated Score / 800</div>
+          <div class="mock-result-level" x-text="mockResult ? mockResult.level : ''"></div>
+        </div>
+
+        <div class="mock-result-grid">
+          <div class="mock-result-cell">
+            <div class="num" x-text="mockResult ? (mockResult.correct + '/' + mockResult.total) : ''"></div>
+            <div class="label">Correct</div>
+          </div>
+          <div class="mock-result-cell">
+            <div class="num" x-text="mockResult ? (mockResult.accuracy + '%') : ''"></div>
+            <div class="label">Accuracy</div>
+          </div>
+          <div class="mock-result-cell">
+            <div class="num" x-text="mockResult ? fmtTime(mockResult.timeUsed) : ''"></div>
+            <div class="label">Time Used</div>
+          </div>
+        </div>
+
+        <template x-if="mockResult && mockResult.wrongs.length > 0">
+          <div>
+            <div class="section-label">— Wrong Answers —</div>
+            <ul>
+              <template x-for="(w, i) in mockResult.wrongs" :key="w.qid">
+                <li class="list-row" @click="openQuestionFromMock(w.qid)">
+                  <div class="list-num" x-text="String(i+1).padStart(2,'0')"></div>
+                  <div>
+                    <div class="list-title" x-text="w.title"></div>
+                    <div class="list-sub" x-text="'正解 ' + w.answer + ' · あなた ' + (w.yourAnswer || '無回答')"></div>
+                  </div>
+                  <div class="list-arrow">→</div>
+                </li>
+              </template>
+            </ul>
+          </div>
+        </template>
+
+        <div class="question-actions" style="margin-top: 32px;">
+          <button class="btn btn-block" @click="closeSubPage()">終了して戻る</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============== LIBRARY (音源管理) ============== -->
+    <div class="subpage" x-show="subPage==='library'" x-transition.opacity>
+      <div class="page">
+        <div class="page-head">
+          <div class="page-num">— Audio Library —</div>
+          <h1 class="page-title">音源を取込</h1>
+          <p class="page-desc">手元のオーディオファイルを選び、本機に保存。一度取込めばオフラインで再生可能。</p>
+        </div>
+
+        <div style="border: 1px solid var(--line); padding: 18px; margin: 16px 0;">
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; text-align: center; margin-bottom: 14px;">
+            <div>
+              <div style="font-family: var(--serif-jp); font-size: 22px; color: var(--ink);" x-text="audioStoreCount"></div>
+              <div style="font-family: var(--serif-en); font-size: 9px; letter-spacing: 0.2em; color: var(--ink-soft); text-transform: uppercase;">Imported</div>
+            </div>
+            <div>
+              <div style="font-family: var(--serif-jp); font-size: 22px; color: var(--ink);" x-text="(listenList.length - audioStoreCount)"></div>
+              <div style="font-family: var(--serif-en); font-size: 9px; letter-spacing: 0.2em; color: var(--ink-soft); text-transform: uppercase;">Missing</div>
+            </div>
+            <div>
+              <div style="font-family: var(--serif-jp); font-size: 22px; color: var(--ink);" x-text="fmtSize(audioStoreSize)"></div>
+              <div style="font-family: var(--serif-en); font-size: 9px; letter-spacing: 0.2em; color: var(--ink-soft); text-transform: uppercase;">Used</div>
+            </div>
+          </div>
+
+          <label class="btn btn-primary btn-block" style="display: block; text-align: center; cursor: pointer;">
+            <span x-show="!importing">ファイルを選択 (複数可)</span>
+            <span x-show="importing" x-text="'取込中… ' + importProgress.done + ' / ' + importProgress.total"></span>
+            <input type="file" multiple accept="audio/*,.m4a,.mp3,.MP3" style="display: none;" @change="onFilesPicked($event)">
+          </label>
+
+          <div x-show="importLog.length > 0" style="margin-top: 12px; font-family: var(--serif-en); font-size: 11px; line-height: 1.7; color: var(--ink-soft);">
+            <template x-for="line in importLog.slice(-5)" :key="line">
+              <div x-text="line"></div>
+            </template>
+          </div>
+        </div>
+
+        <div class="section-label">— File Manifest —</div>
+
+        <ul>
+          <template x-for="(it, i) in listenList" :key="it.id">
+            <li class="list-row">
+              <div class="list-num">
+                <span x-show="hasLocalAudio[it.id]" style="color: var(--sakura-deep);">●</span>
+                <span x-show="!hasLocalAudio[it.id]" style="color: var(--ink-faint);">○</span>
+              </div>
+              <div>
+                <div class="list-title" x-text="it.title"></div>
+                <div class="list-sub" x-text="audioBasename(it.src)"></div>
+              </div>
+              <div class="list-meta">
+                <button x-show="hasLocalAudio[it.id]" @click="removeOneAudio(it.id)" style="font-family: var(--serif-jp); font-size: 11px; color: var(--ink-faint);">削除</button>
+                <span x-show="!hasLocalAudio[it.id]" x-text="fmtTime(it.duration)"></span>
+              </div>
+            </li>
+          </template>
+        </ul>
+
+        <div class="question-actions" style="margin-top: 28px;">
+          <button class="btn btn-soft btn-block" @click="clearAllAudio()" x-show="audioStoreCount > 0">全て削除</button>
+          <button class="btn btn-block" @click="closeSubPage()">戻る</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- TABBAR -->
+  <nav class="tabbar" x-show="!subPage" x-transition.opacity>
+    <button class="tab" :class="{active: tab==='listen'}" @click="switchTab('listen')">
+      <div>聴解</div><div class="tab-en">Listen</div>
+    </button>
+    <button class="tab" :class="{active: tab==='question'}" @click="switchTab('question')">
+      <div>問題</div><div class="tab-en">Quiz</div>
+    </button>
+    <button class="tab" :class="{active: tab==='keigo'}" @click="switchTab('keigo')">
+      <div>敬語</div><div class="tab-en">Keigo</div>
+    </button>
+    <button class="tab" :class="{active: tab==='mock'}" @click="switchTab('mock')">
+      <div>模試</div><div class="tab-en">Mock</div>
+    </button>
+    <button class="tab" :class="{active: tab==='wrong'}" @click="switchTab('wrong')">
+      <div>復習</div><div class="tab-en">Review</div>
+    </button>
+  </nav>
+
+</div>
+
+<script>
+function bjtApp() {
+  return {
+    // —— state ——
+    tab: 'listen',
+    subPage: null,
+    online: navigator.onLine,
+    loaded: false,
+
+    // data
+    listenList: [],
+    listenById: {},
+    questionGroups: [],
+    questionById: {},
+    keigoDeck: [],
+    mockList: [],
+    mockById: {},
+
+    // listen
+    listenFilter: 'all',
+    currentTrack: null,
+    isPlaying: false,
+    playTime: 0,
+    speed: 1.0,
+    abA: null,
+    abB: null,
+    abLoopOn: false,
+    isRecording: false,
+    recorder: null,
+    recordingUrl: null,
+
+    // question
+    qType: 'all',
+    currentQuestion: null,
+    selectedOption: null,
+    showExplain: false,
+    lastResult: null,
+    qIsPlaying: false,
+    qSpeed: 1.0,
+    mockIsPlaying: false,
+
+    // keigo SRS
+    keigoState: {},      // {id: {ease: 'easy'|'soso'|'hard'|null, count}}
+    keigoQueue: [],      // upcoming IDs in order
+    currentKeigo: null,
+    cardFlipped: false,
+    keigoSeen: 0,
+
+    // mock
+    currentMock: null,
+    mockSequence: [],     // [{qid, phase}]
+    mockQIndex: 0,
+    mockQTotal: 0,
+    mockSecondsLeft: 0,
+    mockTimerId: null,
+    mockAnswers: {},     // {qid: 'あ'}
+    mockStartedAt: 0,
+    mockResult: null,
+
+    // wrong
+    wrongMap: {},
+    wrongSort: 'recent',
+
+    // audio store (IndexedDB)
+    hasLocalAudio: {},      // {trackId: true}
+    audioStoreSize: 0,
+    importing: false,
+    importProgress: { done: 0, total: 0 },
+    importLog: [],
+    basenameToId: {},       // {file basename: trackId}
+    _blobUrlCache: {},      // {trackId: objectURL}
+    audioError: false,
+
+    // —— getters ——
+    get filteredListen() {
+      if (this.listenFilter === 'all') return this.listenList;
+      return this.listenList.filter(x => x.kind === this.listenFilter);
+    },
+    get filteredQuestionGroups() {
+      if (this.qType === 'all') return this.questionGroups;
+      return this.questionGroups.map(g => ({
+        label: g.label,
+        items: g.items.filter(q => q.type === this.qType)
+      }));
+    },
+    get progressPct() {
+      if (!this.currentTrack || !this.currentTrack.duration) return 0;
+      return Math.min(100, (this.playTime / this.currentTrack.duration) * 100);
+    },
+    get wrongList() {
+      return Object.values(this.wrongMap);
+    },
+    get sortedWrongList() {
+      const arr = [...this.wrongList];
+      if (this.wrongSort === 'count') arr.sort((a, b) => b.count - a.count);
+      else arr.sort((a, b) => b.lastWrong - a.lastWrong);
+      return arr;
+    },
+    get keigoStats() {
+      const s = { easy: 0, soso: 0, hard: 0 };
+      for (const id of Object.keys(this.keigoState)) {
+        const v = this.keigoState[id]?.ease;
+        if (v === 'easy') s.easy++;
+        else if (v === 'soso') s.soso++;
+        else if (v === 'hard') s.hard++;
+      }
+      return s;
+    },
+    get audioStoreCount() {
+      return Object.keys(this.hasLocalAudio).length;
+    },
+
+    // —— init ——
+    async init() {
+      window.addEventListener('online', () => this.online = true);
+      window.addEventListener('offline', () => this.online = false);
+
+      try {
+        const [listenData, qData, keigoData, mockData] = await Promise.all([
+          fetch('data/listen.json').then(r => r.json()),
+          fetch('data/questions.json').then(r => r.json()),
+          fetch('data/keigo.json').then(r => r.json()),
+          fetch('data/mocks.json').then(r => r.json())
+        ]);
+        this.listenList = listenData;
+        this.listenById = Object.fromEntries(listenData.map(x => [x.id, x]));
+        // build basename lookup for import
+        this.basenameToId = {};
+        for (const x of listenData) {
+          const bn = this.audioBasename(x.src);
+          if (bn) this.basenameToId[bn] = x.id;
+        }
+        this.questionGroups = qData;
+        for (const g of qData) for (const q of g.items) {
+          this.questionById[q.id] = { ...q, _groupLabel: g.label, _groupSource: g.source };
+        }
+        this.keigoDeck = keigoData;
+        this.mockList = mockData;
+        this.mockById = Object.fromEntries(mockData.map(x => [x.id, x]));
+      } catch (e) {
+        console.error('Failed to load data:', e);
+        alert('データの読み込みに失敗しました');
+      }
+
+      // load saved state
+      try {
+        const s = JSON.parse(localStorage.getItem('bjt-state') || '{}');
+        this.tab = s.tab || 'listen';
+        this.speed = s.speed || 1.0;
+        this.qSpeed = s.qSpeed || 1.0;
+        this.keigoState = JSON.parse(localStorage.getItem('bjt-keigo') || '{}');
+        this.wrongMap = JSON.parse(localStorage.getItem('bjt-wrong') || '{}');
+      } catch (e) {}
+
+      this.rebuildKeigoQueue();
+      await this.refreshAudioIndex();
+      this.loaded = true;
+      const loader = document.getElementById('loading');
+      if (loader) loader.style.display = 'none';
+    },
+
+    // —— IndexedDB audio store ——
+    async _openDB() {
+      if (this._dbPromise) return this._dbPromise;
+      this._dbPromise = new Promise((resolve, reject) => {
+        const req = indexedDB.open('bjt-audio', 1);
+        req.onupgradeneeded = () => {
+          const db = req.result;
+          if (!db.objectStoreNames.contains('audio')) {
+            db.createObjectStore('audio', { keyPath: 'id' });
+          }
+        };
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error);
+      });
+      return this._dbPromise;
+    },
+    async _idbTx(mode, fn) {
+      const db = await this._openDB();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction('audio', mode);
+        const store = tx.objectStore('audio');
+        let result;
+        Promise.resolve(fn(store)).then(r => { result = r; });
+        tx.oncomplete = () => resolve(result);
+        tx.onerror = () => reject(tx.error);
+        tx.onabort = () => reject(tx.error);
+      });
+    },
+    async putAudio(id, blob, name) {
+      await this._idbTx('readwrite', store => {
+        store.put({ id, blob, name, size: blob.size, savedAt: Date.now() });
+      });
+      // invalidate any cached blob URL
+      if (this._blobUrlCache[id]) {
+        URL.revokeObjectURL(this._blobUrlCache[id]);
+        delete this._blobUrlCache[id];
+      }
+    },
+    async getAudioBlob(id) {
+      return new Promise(async (resolve) => {
+        const db = await this._openDB();
+        const tx = db.transaction('audio', 'readonly');
+        const req = tx.objectStore('audio').get(id);
+        req.onsuccess = () => resolve(req.result?.blob || null);
+        req.onerror = () => resolve(null);
+      });
+    },
+    async deleteAudio(id) {
+      await this._idbTx('readwrite', store => store.delete(id));
+      if (this._blobUrlCache[id]) {
+        URL.revokeObjectURL(this._blobUrlCache[id]);
+        delete this._blobUrlCache[id];
+      }
+    },
+    async refreshAudioIndex() {
+      const db = await this._openDB();
+      return new Promise(resolve => {
+        const tx = db.transaction('audio', 'readonly');
+        const req = tx.objectStore('audio').getAll();
+        req.onsuccess = () => {
+          const records = req.result || [];
+          const map = {};
+          let totalSize = 0;
+          for (const r of records) {
+            map[r.id] = true;
+            totalSize += (r.size || 0);
+          }
+          this.hasLocalAudio = map;
+          this.audioStoreSize = totalSize;
+          resolve();
+        };
+        req.onerror = () => resolve();
+      });
+    },
+    async getAudioSrc(id, fallbackUrl) {
+      if (this.hasLocalAudio[id]) {
+        if (this._blobUrlCache[id]) return this._blobUrlCache[id];
+        const blob = await this.getAudioBlob(id);
+        if (blob) {
+          const url = URL.createObjectURL(blob);
+          this._blobUrlCache[id] = url;
+          return url;
+        }
+      }
+      return fallbackUrl;
+    },
+
+    // —— Library subpage actions ——
+    openLibrary() {
+      this.subPage = 'library';
+      this.refreshAudioIndex();
+    },
+    audioBasename(src) {
+      if (!src) return '';
+      return src.split('/').pop();
+    },
+    fmtSize(n) {
+      if (!n) return '0 B';
+      const u = ['B', 'KB', 'MB', 'GB'];
+      let i = 0;
+      while (n >= 1024 && i < u.length - 1) { n /= 1024; i++; }
+      return n.toFixed(i === 0 ? 0 : 1) + ' ' + u[i];
+    },
+    async onFilesPicked(ev) {
+      const files = Array.from(ev.target.files || []);
+      if (!files.length) return;
+      this.importing = true;
+      this.importLog = [];
+      this.importProgress = { done: 0, total: files.length };
+      let matched = 0, unmatched = 0;
+      for (const f of files) {
+        const id = this.basenameToId[f.name];
+        if (id) {
+          try {
+            await this.putAudio(id, f, f.name);
+            matched++;
+            this.importLog.push('✓ ' + f.name);
+          } catch (e) {
+            this.importLog.push('✗ ' + f.name + ' (' + e.message + ')');
+          }
+        } else {
+          unmatched++;
+          this.importLog.push('? ' + f.name + ' (該当なし)');
+        }
+        this.importProgress.done++;
+      }
+      this.importing = false;
+      await this.refreshAudioIndex();
+      this.importLog.push('— 完了: ' + matched + ' 件保存, ' + unmatched + ' 件スキップ —');
+      ev.target.value = '';
+    },
+    async removeOneAudio(id) {
+      await this.deleteAudio(id);
+      await this.refreshAudioIndex();
+    },
+    async clearAllAudio() {
+      if (!confirm('全ての保存音源を削除しますか?')) return;
+      await this._idbTx('readwrite', store => store.clear());
+      this._blobUrlCache = {};
+      await this.refreshAudioIndex();
+    },
+
+    persist() {
+      localStorage.setItem('bjt-state', JSON.stringify({
+        tab: this.tab, speed: this.speed, qSpeed: this.qSpeed
+      }));
+    },
+    persistKeigo() { localStorage.setItem('bjt-keigo', JSON.stringify(this.keigoState)); },
+    persistWrong() { localStorage.setItem('bjt-wrong', JSON.stringify(this.wrongMap)); },
+
+    // —— util ——
+    fmtTime(s) {
+      if (!s || isNaN(s)) return '00:00';
+      s = Math.floor(s);
+      const m = Math.floor(s / 60);
+      const ss = s % 60;
+      if (m >= 60) {
+        const h = Math.floor(m / 60), mm = m % 60;
+        return String(h).padStart(2,'0') + ':' + String(mm).padStart(2,'0') + ':' + String(ss).padStart(2,'0');
+      }
+      return String(m).padStart(2,'0') + ':' + String(ss).padStart(2,'0');
+    },
+
+    questionSourceLabel(q) {
+      return q._groupLabel || q.source || '';
+    },
+
+    // —— nav ——
+    switchTab(t) {
+      this.tab = t;
+      this.subPage = null;
+      this.stopAllAudio();
+      this.persist();
+    },
+    closeSubPage() {
+      this.stopAllAudio();
+      this.subPage = null;
+      this.selectedOption = null;
+      this.showExplain = false;
+      this.lastResult = null;
+      this.currentTrack = null;
+      this.currentQuestion = null;
+      this.currentMock = null;
+      this.recordingUrl = null;
+      this.clearAB();
+      if (this.mockTimerId) { clearInterval(this.mockTimerId); this.mockTimerId = null; }
+    },
+    stopAllAudio() {
+      const a = this.$refs.audioPlayer;
+      if (a) { a.pause(); }
+      const q = this.$refs.qAudio;
+      if (q) { q.pause(); }
+      const m = this.$refs.mockAudio;
+      if (m) { m.pause(); }
+      if (this.isRecording) this.toggleRecord();
+    },
+
+    // ============== PLAYER ==============
+    async openPlayer(id) {
+      this.currentTrack = this.listenById[id];
+      this.subPage = 'player';
+      this.playTime = 0;
+      this.audioError = false;
+      this.abA = null; this.abB = null; this.abLoopOn = false;
+      this.recordingUrl = null;
+      const src = await this.getAudioSrc(id, this.currentTrack.src);
+      this.$nextTick(() => {
+        const a = this.$refs.audioPlayer;
+        if (a) {
+          a.src = src;
+          a.playbackRate = this.speed;
+          a.load();
+        }
+      });
+    },
+    togglePlay() {
+      const a = this.$refs.audioPlayer;
+      if (!a) return;
+      if (a.paused) a.play().catch(e => console.warn(e));
+      else a.pause();
+    },
+    seek(delta) {
+      const a = this.$refs.audioPlayer;
+      if (!a) return;
+      a.currentTime = Math.max(0, Math.min((a.duration || 0), a.currentTime + delta));
+    },
+    seekBar(ev) {
+      const bar = ev.currentTarget;
+      const rect = bar.getBoundingClientRect();
+      const ratio = (ev.clientX - rect.left) / rect.width;
+      const a = this.$refs.audioPlayer;
+      if (a && a.duration) a.currentTime = ratio * a.duration;
+    },
+    setSpeed(s) {
+      this.speed = s;
+      const a = this.$refs.audioPlayer;
+      if (a) a.playbackRate = s;
+      this.persist();
+    },
+    onTimeUpdate() {
+      const a = this.$refs.audioPlayer;
+      if (!a) return;
+      this.playTime = a.currentTime;
+      if (this.abLoopOn && this.abA !== null && this.abB !== null) {
+        if (a.currentTime >= this.abB) a.currentTime = this.abA;
+      }
+    },
+    onLoadedMetadata() {
+      const a = this.$refs.audioPlayer;
+      if (a && a.duration && this.currentTrack && !this.currentTrack.duration) {
+        this.currentTrack.duration = a.duration;
+      }
+    },
+    onAudioEnded() { this.isPlaying = false; },
+    setABPoint() {
+      const a = this.$refs.audioPlayer;
+      if (!a) return;
+      const t = a.currentTime;
+      if (this.abA === null) {
+        this.abA = t;
+      } else if (this.abB === null) {
+        if (t > this.abA + 0.5) {
+          this.abB = t;
+          this.abLoopOn = true;
+        }
+      } else {
+        // reset
+        this.abA = t; this.abB = null; this.abLoopOn = false;
+      }
+    },
+    clearAB() {
+      this.abA = null; this.abB = null; this.abLoopOn = false;
+    },
+    abButtonText() {
+      if (this.abA === null) return 'A 設定';
+      if (this.abB === null) return 'B 設定';
+      return 'A 再設定';
+    },
+    abInfoText() {
+      if (this.abA === null) return '';
+      const a = this.fmtTime(this.abA);
+      if (this.abB === null) return 'A = ' + a;
+      const b = this.fmtTime(this.abB);
+      return 'A = ' + a + '   B = ' + b + (this.abLoopOn ? '   LOOPING' : '');
+    },
+
+    // —— recording ——
+    async toggleRecord() {
+      if (this.isRecording) {
+        this.recorder?.stop();
+        this.isRecording = false;
+        return;
+      }
+      if (!navigator.mediaDevices?.getUserMedia) {
+        alert('お使いのブラウザは録音をサポートしていません');
+        return;
+      }
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const chunks = [];
+        const rec = new MediaRecorder(stream);
+        rec.ondataavailable = e => { if (e.data.size) chunks.push(e.data); };
+        rec.onstop = () => {
+          const blob = new Blob(chunks, { type: rec.mimeType || 'audio/webm' });
+          this.recordingUrl = URL.createObjectURL(blob);
+          stream.getTracks().forEach(t => t.stop());
+        };
+        rec.start();
+        this.recorder = rec;
+        this.isRecording = true;
+      } catch (e) {
+        alert('マイクのアクセスが拒否されました: ' + e.message);
+      }
+    },
+
+    // ============== QUESTION ==============
+    async openQuestion(qid) {
+      const q = this.questionById[qid];
+      if (!q) return;
+      this.currentQuestion = q;
+      this.selectedOption = null;
+      this.showExplain = false;
+      this.lastResult = null;
+      this.subPage = 'question';
+      let src = null;
+      if (q.audioId) {
+        const fallback = this.listenById[q.audioId]?.src;
+        src = await this.getAudioSrc(q.audioId, fallback);
+      }
+      this.$nextTick(() => {
+        const a = this.$refs.qAudio;
+        if (a && src) { a.src = src; a.playbackRate = this.qSpeed; a.load(); }
+      });
+    },
+    submitAnswer() {
+      if (!this.selectedOption || !this.currentQuestion) return;
+      const correct = this.selectedOption === this.currentQuestion.answer;
+      this.lastResult = correct ? 'correct' : 'wrong';
+      this.showExplain = true;
+
+      const qid = this.currentQuestion.id;
+      const now = Date.now();
+      if (correct) {
+        if (this.wrongMap[qid]) { delete this.wrongMap[qid]; this.persistWrong(); }
+      } else {
+        const prev = this.wrongMap[qid];
+        this.wrongMap[qid] = {
+          qid,
+          title: this.currentQuestion.title,
+          source: this.questionSourceLabel(this.currentQuestion),
+          count: (prev?.count || 0) + 1,
+          lastWrong: now
+        };
+        this.persistWrong();
+      }
+      const a = this.$refs.qAudio; if (a) a.pause();
+    },
+    toggleQuestionAudio() {
+      const a = this.$refs.qAudio;
+      if (!a) return;
+      if (a.paused) a.play().catch(e => console.warn(e));
+      else a.pause();
+    },
+    cycleQuestionSpeed() {
+      const speeds = [0.8, 1.0, 1.2, 1.5];
+      const i = speeds.indexOf(this.qSpeed);
+      this.qSpeed = speeds[(i + 1) % speeds.length];
+      const a = this.$refs.qAudio;
+      if (a) a.playbackRate = this.qSpeed;
+      this.persist();
+    },
+    getQuestionAudioInfo() {
+      if (!this.currentQuestion?.audioId) return '';
+      const t = this.listenById[this.currentQuestion.audioId];
+      if (!t) return this.currentQuestion.audioId;
+      return t.title + ' · ' + this.fmtTime(t.duration);
+    },
+
+    // ============== KEIGO ==============
+    rebuildKeigoQueue() {
+      // Build queue: cards not yet 'easy', in original order + shuffle within difficulty
+      // Strategy: hard cards appear first, then soso, then untouched. easy excluded.
+      const hard = [], soso = [], fresh = [];
+      for (const card of this.keigoDeck) {
+        const st = this.keigoState[card.id];
+        if (!st) fresh.push(card.id);
+        else if (st.ease === 'hard') hard.push(card.id);
+        else if (st.ease === 'soso') soso.push(card.id);
+        // 'easy' excluded (mastered for this session)
+      }
+      // Mix: alternate hard with fresh, soso scattered
+      const queue = [];
+      const max = Math.max(hard.length, soso.length, fresh.length);
+      for (let i = 0; i < max; i++) {
+        if (hard[i]) queue.push(hard[i]);
+        if (fresh[i]) queue.push(fresh[i]);
+        if (soso[i]) queue.push(soso[i]);
+      }
+      // If everything is mastered, restart with all
+      if (queue.length === 0) queue.push(...this.keigoDeck.map(c => c.id));
+      this.keigoQueue = queue;
+      this.currentKeigo = this.keigoDeck.find(c => c.id === queue[0]) || null;
+      this.cardFlipped = false;
+    },
+    markKeigo(level) {
+      if (!this.currentKeigo) return;
+      const id = this.currentKeigo.id;
+      this.keigoState[id] = {
+        ease: level,
+        count: (this.keigoState[id]?.count || 0) + 1,
+        ts: Date.now()
+      };
+      this.persistKeigo();
+      this.keigoSeen++;
+
+      // shift current out
+      const removed = this.keigoQueue.shift();
+      // Re-insert based on level
+      if (level === 'hard') {
+        const pos = Math.min(this.keigoQueue.length, 3 + Math.floor(Math.random() * 3));
+        this.keigoQueue.splice(pos, 0, removed);
+      } else if (level === 'soso') {
+        const pos = Math.min(this.keigoQueue.length, 8 + Math.floor(Math.random() * 5));
+        this.keigoQueue.splice(pos, 0, removed);
+      }
+      // 'easy' = removed completely from queue this session
+
+      if (this.keigoQueue.length === 0) this.rebuildKeigoQueue();
+      else this.currentKeigo = this.keigoDeck.find(c => c.id === this.keigoQueue[0]) || null;
+      this.cardFlipped = false;
+    },
+
+    // —— swipe ——
+    _ts: null,
+    touchStart(e) { this._ts = e.changedTouches[0].clientX; },
+    touchEnd(e, ctx) {
+      if (this._ts === null) return;
+      const dx = e.changedTouches[0].clientX - this._ts;
+      this._ts = null;
+      if (Math.abs(dx) < 60) return;
+      if (ctx === 'keigo') {
+        this.cardFlipped = false;
+        if (dx < 0) {
+          // next = treat as soso
+          this.markKeigo('soso');
+        } else {
+          // previous: rotate queue backwards
+          if (this.keigoQueue.length > 1) {
+            const last = this.keigoQueue.pop();
+            this.keigoQueue.unshift(last);
+            this.currentKeigo = this.keigoDeck.find(c => c.id === this.keigoQueue[0]) || null;
+          }
+        }
+      }
+    },
+
+    // ============== MOCK ==============
+    openMockConfirm(id) {
+      this.currentMock = this.mockById[id];
+      this.subPage = 'mock-confirm';
+    },
+    startMockRun() {
+      if (!this.currentMock) return;
+      // build sequence
+      const seq = [];
+      for (const sec of this.currentMock.sections) {
+        for (const qid of sec.questionIds) {
+          seq.push({ qid, phase: sec.phase });
+        }
+      }
+      this.mockSequence = seq;
+      this.mockQIndex = 0;
+      this.mockQTotal = seq.length;
+      this.mockAnswers = {};
+      this.mockSecondsLeft = this.currentMock.totalMinutes * 60;
+      this.mockStartedAt = Date.now();
+      this.subPage = 'mock-run';
+      this.loadMockQuestion();
+      // start timer
+      if (this.mockTimerId) clearInterval(this.mockTimerId);
+      this.mockTimerId = setInterval(() => {
+        this.mockSecondsLeft--;
+        if (this.mockSecondsLeft <= 0) {
+          clearInterval(this.mockTimerId);
+          this.mockTimerId = null;
+          this.finishMockRun();
+        }
+      }, 1000);
+    },
+    async loadMockQuestion() {
+      const cur = this.mockSequence[this.mockQIndex];
+      if (!cur) return;
+      const q = this.questionById[cur.qid];
+      this.currentQuestion = q;
+      this.selectedOption = null;
+      let src = null;
+      if (q.audioId) {
+        const fallback = this.listenById[q.audioId]?.src;
+        src = await this.getAudioSrc(q.audioId, fallback);
+      }
+      this.$nextTick(() => {
+        const a = this.$refs.mockAudio;
+        if (a && src) { a.src = src; a.playbackRate = this.qSpeed; a.load(); }
+        else if (a) { a.removeAttribute('src'); a.load(); }
+      });
+    },
+    mockNextQuestion() {
+      if (!this.selectedOption || !this.currentQuestion) return;
+      this.mockAnswers[this.currentQuestion.id] = this.selectedOption;
+      const a = this.$refs.mockAudio; if (a) a.pause();
+
+      if (this.mockQIndex + 1 >= this.mockQTotal) {
+        this.finishMockRun();
+      } else {
+        this.mockQIndex++;
+        this.loadMockQuestion();
+      }
+    },
+    toggleMockAudio() {
+      const a = this.$refs.mockAudio;
+      if (!a) return;
+      if (a.paused) a.play().catch(e => console.warn(e));
+      else a.pause();
+    },
+    currentMockPhase() {
+      const cur = this.mockSequence[this.mockQIndex];
+      return cur ? cur.phase : '';
+    },
+    finishMockRun() {
+      if (this.mockTimerId) { clearInterval(this.mockTimerId); this.mockTimerId = null; }
+      let correct = 0;
+      const wrongs = [];
+      for (const it of this.mockSequence) {
+        const q = this.questionById[it.qid];
+        const ans = this.mockAnswers[it.qid];
+        if (ans === q.answer) correct++;
+        else {
+          wrongs.push({ qid: q.id, title: q.title, answer: q.answer, yourAnswer: ans });
+          // add to wrongMap
+          const prev = this.wrongMap[q.id];
+          this.wrongMap[q.id] = {
+            qid: q.id,
+            title: q.title,
+            source: this.questionSourceLabel(q),
+            count: (prev?.count || 0) + 1,
+            lastWrong: Date.now()
+          };
+        }
+      }
+      this.persistWrong();
+      const total = this.mockSequence.length;
+      const accuracy = total ? Math.round((correct / total) * 100) : 0;
+      const score = Math.round(accuracy * 8);  // scale 0-100 → 0-800
+      const level = score >= 600 ? 'J1+ レベル' :
+                    score >= 530 ? 'J1 レベル' :
+                    score >= 420 ? 'J2 レベル' :
+                    score >= 320 ? 'J3 レベル' :
+                    score >= 200 ? 'J4 レベル' : 'J5 レベル';
+      const timeUsed = (this.currentMock.totalMinutes * 60) - this.mockSecondsLeft;
+      this.mockResult = {
+        mockName: this.currentMock.name,
+        score, level, correct, total, accuracy, timeUsed, wrongs
+      };
+      this.subPage = 'mock-result';
+    },
+    openQuestionFromMock(qid) {
+      // simply switch out of mock-result into question subpage
+      this.subPage = null;
+      this.tab = 'question';
+      this.persist();
+      this.$nextTick(() => this.openQuestion(qid));
+    },
+
+    // —— top bar text ——
+    getTopTitle() {
+      if (this.subPage === 'player') return '聴解';
+      if (this.subPage === 'question') return '問題';
+      if (this.subPage === 'mock-confirm') return '模試';
+      if (this.subPage === 'mock-run') return '本番モード';
+      if (this.subPage === 'mock-result') return '採点結果';
+      if (this.subPage === 'library') return '音源';
+      const titles = { listen: '聴解', question: '問題', keigo: '敬語', mock: '模試', wrong: '復習' };
+      return titles[this.tab] || 'BJT 訓練';
+    },
+    getTopSub() {
+      if (this.subPage === 'player') return 'NOW PLAYING';
+      if (this.subPage === 'question') return 'QUESTION';
+      if (this.subPage === 'mock-confirm') return 'MOCK · READY';
+      if (this.subPage === 'mock-run') return 'MOCK · RUNNING';
+      if (this.subPage === 'mock-result') return 'MOCK · RESULT';
+      if (this.subPage === 'library') return 'AUDIO LIBRARY';
+      const subs = { listen: 'LISTENING', question: 'QUIZ', keigo: 'KEIGO', mock: 'MOCK', wrong: 'REVIEW' };
+      return subs[this.tab] || '';
+    },
+  };
+}
+
+// —— SW registration ——
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').then(
+      (reg) => console.log('[SW] registered:', reg.scope),
+      (err) => console.warn('[SW] registration failed:', err)
+    );
+  });
+}
+</script>
+
+</body>
+</html>

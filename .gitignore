@@ -1,0 +1,10 @@
+# Audio assets are NOT included in this repo — copyright reasons.
+# Audio is imported per-device via IndexedDB ("音源を取込" page).
+audio/
+
+# macOS
+.DS_Store
+
+# Editor
+.vscode/
+.idea/

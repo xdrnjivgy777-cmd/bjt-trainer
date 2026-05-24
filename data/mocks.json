@@ -1,0 +1,95 @@
+[
+  {
+    "id": "mock-official-01",
+    "name": "公式模擬テストガイド 第1回",
+    "meta": "Official · 16Q · 90 Min",
+    "audioId": "official-full",
+    "totalMinutes": 90,
+    "sections": [
+      {
+        "phase": "聴解",
+        "minutes": 35,
+        "questionIds": ["q-of-l01", "q-of-l02", "q-of-l03", "q-xh-l03", "q-gd-l01"]
+      },
+      {
+        "phase": "聴読解",
+        "minutes": 25,
+        "questionIds": ["q-of-lr01", "q-xh-lr01", "q-je-lr01", "q-gd-lr01"]
+      },
+      {
+        "phase": "読解",
+        "minutes": 30,
+        "questionIds": ["q-of-r01", "q-of-r02", "q-xh-r01", "q-xh-r02", "q-gd-r01", "q-gd-r02", "q-je-r01"]
+      }
+    ]
+  },
+  {
+    "id": "mock-xiaohong-01",
+    "name": "小红 模擬対策 第1回",
+    "meta": "Xiaohong · 12Q · 75 Min",
+    "totalMinutes": 75,
+    "sections": [
+      {
+        "phase": "聴解",
+        "minutes": 25,
+        "questionIds": ["q-xh-l01", "q-xh-l02", "q-xh-l03", "q-xl-l01"]
+      },
+      {
+        "phase": "聴読解",
+        "minutes": 20,
+        "questionIds": ["q-xh-lr01", "q-gd-lr01"]
+      },
+      {
+        "phase": "読解",
+        "minutes": 30,
+        "questionIds": ["q-xh-r01", "q-xh-r02", "q-xl-r01", "q-xl-r02", "q-je-r01", "q-je-r02"]
+      }
+    ]
+  },
+  {
+    "id": "mock-xiaolan-01",
+    "name": "小蓝 模擬問題 第1回",
+    "meta": "Xiaolan · 10Q · 60 Min",
+    "totalMinutes": 60,
+    "sections": [
+      {
+        "phase": "聴解",
+        "minutes": 20,
+        "questionIds": ["q-xl-l01", "q-xl-l02", "q-je-l01"]
+      },
+      {
+        "phase": "聴読解",
+        "minutes": 15,
+        "questionIds": ["q-je-lr01", "q-of-lr01"]
+      },
+      {
+        "phase": "読解",
+        "minutes": 25,
+        "questionIds": ["q-xl-r01", "q-xl-r02", "q-of-r01", "q-of-r02", "q-gd-r02"]
+      }
+    ]
+  },
+  {
+    "id": "mock-jetro-01",
+    "name": "JETRO 模擬と対策 第1回",
+    "meta": "JETRO · 12Q · 75 Min",
+    "totalMinutes": 75,
+    "sections": [
+      {
+        "phase": "聴解",
+        "minutes": 25,
+        "questionIds": ["q-je-l01", "q-xh-l01", "q-gd-l01"]
+      },
+      {
+        "phase": "聴読解",
+        "minutes": 20,
+        "questionIds": ["q-je-lr01", "q-of-lr01", "q-xh-lr01"]
+      },
+      {
+        "phase": "読解",
+        "minutes": 30,
+        "questionIds": ["q-je-r01", "q-je-r02", "q-xl-r01", "q-of-r02", "q-gd-r01", "q-xh-r02"]
+      }
+    ]
+  }
+]

@@ -1,0 +1,275 @@
+[
+  {
+    "id": "official-full",
+    "title": "公式模擬テストガイド 全編音声",
+    "source": "公式",
+    "kind": "official",
+    "src": "audio/official-full.mp3",
+    "duration": 4143,
+    "note": "本番一回分。AB 循環で区間練習推奨。"
+  },
+  {
+    "id": "ck1-01",
+    "title": "聴解 Part1 短句応答 01",
+    "source": "聴解専項 CD1",
+    "kind": "chokai",
+    "src": "audio/chokai-cd1/BJTchokai_CD1-01.m4a",
+    "duration": 30
+  },
+  {
+    "id": "ck1-02",
+    "title": "聴解 Part1 短句応答 02",
+    "source": "聴解専項 CD1",
+    "kind": "chokai",
+    "src": "audio/chokai-cd1/BJTchokai_CD1-02.m4a",
+    "duration": 31
+  },
+  {
+    "id": "ck1-03",
+    "title": "聴解 Part1 短句応答 03",
+    "source": "聴解専項 CD1",
+    "kind": "chokai",
+    "src": "audio/chokai-cd1/BJTchokai_CD1-03.m4a",
+    "duration": 30
+  },
+  {
+    "id": "ck1-05",
+    "title": "聴解 Part1 短句応答 05",
+    "source": "聴解専項 CD1",
+    "kind": "chokai",
+    "src": "audio/chokai-cd1/BJTchokai_CD1-05.m4a",
+    "duration": 27
+  },
+  {
+    "id": "ck1-08",
+    "title": "聴解 Part1 短句応答 08",
+    "source": "聴解専項 CD1",
+    "kind": "chokai",
+    "src": "audio/chokai-cd1/BJTchokai_CD1-08.m4a",
+    "duration": 31
+  },
+  {
+    "id": "ck1-13",
+    "title": "聴解 Part2 短対話 13",
+    "source": "聴解専項 CD1",
+    "kind": "chokai",
+    "src": "audio/chokai-cd1/BJTchokai_CD1-13.m4a",
+    "duration": 41
+  },
+  {
+    "id": "ck1-15",
+    "title": "聴解 Part2 短対話 15",
+    "source": "聴解専項 CD1",
+    "kind": "chokai",
+    "src": "audio/chokai-cd1/BJTchokai_CD1-15.m4a",
+    "duration": 45
+  },
+  {
+    "id": "ck1-18",
+    "title": "聴解 Part2 短対話 18",
+    "source": "聴解専項 CD1",
+    "kind": "chokai",
+    "src": "audio/chokai-cd1/BJTchokai_CD1-18.m4a",
+    "duration": 51
+  },
+  {
+    "id": "ck1-22",
+    "title": "聴解 Part2 短対話 22",
+    "source": "聴解専項 CD1",
+    "kind": "chokai",
+    "src": "audio/chokai-cd1/BJTchokai_CD1-22.m4a",
+    "duration": 46
+  },
+  {
+    "id": "ck1-25",
+    "title": "聴解 Part2 短対話 25",
+    "source": "聴解専項 CD1",
+    "kind": "chokai",
+    "src": "audio/chokai-cd1/BJTchokai_CD1-25.m4a",
+    "duration": 79
+  },
+  {
+    "id": "ck1-26",
+    "title": "聴解 Part3 長会話 26",
+    "source": "聴解専項 CD1",
+    "kind": "chokai",
+    "src": "audio/chokai-cd1/BJTchokai_CD1-26.m4a",
+    "duration": 118
+  },
+  {
+    "id": "ck1-30",
+    "title": "聴解 Part3 長会話 30",
+    "source": "聴解専項 CD1",
+    "kind": "chokai",
+    "src": "audio/chokai-cd1/BJTchokai_CD1-30.m4a",
+    "duration": 120
+  },
+  {
+    "id": "ck1-37",
+    "title": "聴解 Part3 長会話 37",
+    "source": "聴解専項 CD1",
+    "kind": "chokai",
+    "src": "audio/chokai-cd1/BJTchokai_CD1-37.m4a",
+    "duration": 153
+  },
+  {
+    "id": "ck1-45",
+    "title": "聴解 Part3 長会話 45",
+    "source": "聴解専項 CD1",
+    "kind": "chokai",
+    "src": "audio/chokai-cd1/BJTchokai_CD1-45.m4a",
+    "duration": 103
+  },
+  {
+    "id": "ck1-50",
+    "title": "聴解 Part3 長会話 50",
+    "source": "聴解専項 CD1",
+    "kind": "chokai",
+    "src": "audio/chokai-cd1/BJTchokai_CD1-50.m4a",
+    "duration": 126
+  },
+  {
+    "id": "ck2-01",
+    "title": "聴読解 解説 01",
+    "source": "聴解専項 CD2",
+    "kind": "chokai",
+    "src": "audio/chokai-cd2/BJTchokai_CD2-01.m4a",
+    "duration": 43
+  },
+  {
+    "id": "ck2-05",
+    "title": "聴読解 図表問題 05",
+    "source": "聴解専項 CD2",
+    "kind": "chokai",
+    "src": "audio/chokai-cd2/BJTchokai_CD2-05.m4a",
+    "duration": 52
+  },
+  {
+    "id": "ck2-15",
+    "title": "聴読解 図表問題 15",
+    "source": "聴解専項 CD2",
+    "kind": "chokai",
+    "src": "audio/chokai-cd2/BJTchokai_CD2-15.m4a",
+    "duration": 28
+  },
+  {
+    "id": "ck2-25",
+    "title": "聴読解 図表問題 25",
+    "source": "聴解専項 CD2",
+    "kind": "chokai",
+    "src": "audio/chokai-cd2/BJTchokai_CD2-25.m4a",
+    "duration": 31
+  },
+  {
+    "id": "ck2-45",
+    "title": "聴読解 グラフ説明 45",
+    "source": "聴解専項 CD2",
+    "kind": "chokai",
+    "src": "audio/chokai-cd2/BJTchokai_CD2-45.m4a",
+    "duration": 86
+  },
+  {
+    "id": "ck2-60",
+    "title": "聴読解 ビジネス会話 60",
+    "source": "聴解専項 CD2",
+    "kind": "chokai",
+    "src": "audio/chokai-cd2/BJTchokai_CD2-60.m4a",
+    "duration": 98
+  },
+  {
+    "id": "ck2-70",
+    "title": "聴読解 ビジネス会話 70",
+    "source": "聴解専項 CD2",
+    "kind": "chokai",
+    "src": "audio/chokai-cd2/BJTchokai_CD2-70.m4a",
+    "duration": 67
+  },
+  {
+    "id": "ck2-75",
+    "title": "聴読解 ビジネス会話 75",
+    "source": "聴解専項 CD2",
+    "kind": "chokai",
+    "src": "audio/chokai-cd2/BJTchokai_CD2-75.m4a",
+    "duration": 118
+  },
+  {
+    "id": "xh-02",
+    "title": "小红 模試 第1回 案内応答",
+    "source": "小红",
+    "kind": "xiaohong",
+    "src": "audio/xiaohong-slow/TRACK 2.MP3",
+    "duration": 49
+  },
+  {
+    "id": "xh-14",
+    "title": "小红 模試 第1回 短対話 14",
+    "source": "小红",
+    "kind": "xiaohong",
+    "src": "audio/xiaohong-slow/TRACK14.MP3",
+    "duration": 58
+  },
+  {
+    "id": "xh-20",
+    "title": "小红 模試 第1回 短対話 20",
+    "source": "小红",
+    "kind": "xiaohong",
+    "src": "audio/xiaohong-slow/TRACK20.MP3",
+    "duration": 40
+  },
+  {
+    "id": "xh-30",
+    "title": "小红 模試 第1回 長会話 30",
+    "source": "小红",
+    "kind": "xiaohong",
+    "src": "audio/xiaohong-slow/TRACK30.MP3",
+    "duration": 103
+  },
+  {
+    "id": "gd-01",
+    "title": "ガイド 第1回 はじめに",
+    "source": "公式ガイド",
+    "kind": "guide",
+    "src": "audio/guide/Track01.mp3",
+    "duration": 86
+  },
+  {
+    "id": "gd-11",
+    "title": "ガイド 第2回 中級例題",
+    "source": "公式ガイド",
+    "kind": "guide",
+    "src": "audio/guide/Track11.mp3",
+    "duration": 108
+  },
+  {
+    "id": "gd-20",
+    "title": "ガイド 第3回 模試聴解",
+    "source": "公式ガイド",
+    "kind": "guide",
+    "src": "audio/guide/Track20.mp3",
+    "duration": 118
+  },
+  {
+    "id": "gd-30",
+    "title": "ガイド 第4回 長文聴読解",
+    "source": "公式ガイド",
+    "kind": "guide",
+    "src": "audio/guide/Track30.mp3",
+    "duration": 128
+  },
+  {
+    "id": "gd-44",
+    "title": "ガイド 第5回 総合問題",
+    "source": "公式ガイド",
+    "kind": "guide",
+    "src": "audio/guide/Track44.mp3",
+    "duration": 115
+  },
+  {
+    "id": "gd-52",
+    "title": "ガイド 第6回 上級モノローグ",
+    "source": "公式ガイド",
+    "kind": "guide",
+    "src": "audio/guide/Track52.mp3",
+    "duration": 107
+  }
+]
