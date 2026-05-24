@@ -229,7 +229,7 @@
     "title": "ガイド 第1回 はじめに",
     "source": "公式ガイド",
     "kind": "guide",
-    "src": "audio/guide/Track01.mp3",
+    "src": "audio/guide/Guide_Track01.mp3",
     "duration": 86
   },
   {
@@ -237,7 +237,7 @@
     "title": "ガイド 第2回 中級例題",
     "source": "公式ガイド",
     "kind": "guide",
-    "src": "audio/guide/Track11.mp3",
+    "src": "audio/guide/Guide_Track11.mp3",
     "duration": 108
   },
   {
@@ -245,7 +245,7 @@
     "title": "ガイド 第3回 模試聴解",
     "source": "公式ガイド",
     "kind": "guide",
-    "src": "audio/guide/Track20.mp3",
+    "src": "audio/guide/Guide_Track20.mp3",
     "duration": 118
   },
   {
@@ -253,7 +253,7 @@
     "title": "ガイド 第4回 長文聴読解",
     "source": "公式ガイド",
     "kind": "guide",
-    "src": "audio/guide/Track30.mp3",
+    "src": "audio/guide/Guide_Track30.mp3",
     "duration": 128
   },
   {
@@ -261,7 +261,7 @@
     "title": "ガイド 第5回 総合問題",
     "source": "公式ガイド",
     "kind": "guide",
-    "src": "audio/guide/Track44.mp3",
+    "src": "audio/guide/Guide_Track44.mp3",
     "duration": 115
   },
   {
@@ -269,7 +269,7 @@
     "title": "ガイド 第6回 上級モノローグ",
     "source": "公式ガイド",
     "kind": "guide",
-    "src": "audio/guide/Track52.mp3",
+    "src": "audio/guide/Guide_Track52.mp3",
     "duration": 107
   }
 ]
